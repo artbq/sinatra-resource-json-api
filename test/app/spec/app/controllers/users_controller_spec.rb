@@ -35,11 +35,25 @@ RSpec.describe "/users" do
 
     context "with query params" do
 
-      context "equality" do
+      context "=" do
         let(:params) { {query: {name: "Walter"}} }
 
         specify { expect(entry_ids).to include walter.id, walter_jr.id }
         specify { expect(entry_ids).to_not include grandpa.id, grandma.id, skyler.id }
+      end
+
+      context "= and =" do
+        let(:params) { {query: {name: "Walter", age: 16}} }
+
+        specify { expect(entry_ids).to include walter_jr.id }
+        specify { expect(entry_ids).to_not include walter.id, grandpa.id, grandma.id, skyler.id }
+      end
+
+      context "= or =" do
+        let(:params) { {query: {or: {"0" => {name: "Walter"}, "1" => {age: 70}}}} }
+
+        specify { expect(entry_ids).to include walter.id, walter_jr.id, grandma.id }
+        specify { expect(entry_ids).to_not include grandpa.id, skyler.id }
       end
     end
   end
