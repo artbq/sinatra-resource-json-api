@@ -2,6 +2,7 @@ require "sinatra"
 require "sinatra/contrib"
 
 require "sinatra/resource_json_api/query_params_to_sql"
+require "sinatra/resource_json_api/util"
 
 module Sinatra
   module ResourceJsonApi
@@ -12,6 +13,7 @@ module Sinatra
 
     def self.registered(app)
       app.helpers QueryParamsToSql
+      app.helpers Util
     end
 
     def def_crud_actions(model, options={})
@@ -31,8 +33,10 @@ module Sinatra
       get "/" do
         content_type "application/json;charset=utf-8"
 
-        records = if params[:query]
-          model.where(query_params_to_sql(params[:query]))
+        fixed_params = array_hash_to_array(params)
+
+        records = if fixed_params[:query]
+          model.where(query_params_to_sql(fixed_params[:query]))
         else
           model.all
         end

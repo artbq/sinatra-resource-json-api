@@ -19,6 +19,11 @@ describe Sinatra::ResourceJsonApi::Util do
     end
 
     it { should eq [:a, {b: :c, d: :e}, [:f, :g], [:h, :i], :j] }
+
+    context "case 1" do
+      let(:hash) { {"query" => {"or" => {"0" => {"name" => "Walter"}, "1" => {"age" => 70}}}} }
+      it { should eq Hash["query", {"or" => [{"name" => "Walter"}, {"age" => 70}]}] }
+    end
   end
 end
 
