@@ -11,7 +11,9 @@ RSpec.configure do |conf|
   end
 
   conf.around(:each) do |example|
-    DatabaseCleaner.cleaning { example.run }
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 
   conf.include FactoryGirl::Syntax::Methods
@@ -27,7 +29,7 @@ def app(app = nil, &blk)
 end
 
 def json
-  @json ||= JSON.parse(last_response.body)
+  JSON.parse(last_response.body)
 end
 
 def entry_ids
