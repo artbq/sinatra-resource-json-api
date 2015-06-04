@@ -48,8 +48,18 @@ module Sinatra
           records = records.order(order_sql)
         end
 
+        if fixed_params[:page] || fixed_params[:per_page]
+          records = records.paginate(page: fixed_params[:page],
+                                     per_page: fixed_params[:per_page])
+          total_entries = records.total_entries
+          total_pages = records.total_pages
+        else
+          total_entries = records.count
+          total_pages = 1
+        end
+
         json entries: records.map(&:as_json),
-          pagination: {total_entries: records.count, total_pages: 1}
+          pagination: {total_entries: total_entries, total_pages: total_pages}
       end
     end
   end

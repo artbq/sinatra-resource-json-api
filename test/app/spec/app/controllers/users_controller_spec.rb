@@ -61,6 +61,14 @@ RSpec.describe "/users" do
       let(:params) { {order: {"0" => {name: "asc"}, "1" => {age: "asc"}}} }
       specify { expect(entry_ids).to eq [grandpa.id, grandma.id, skyler.id, walter_jr.id, walter.id] }
     end
+
+    context "with pagination params" do
+      let(:params) { {page: "2", per_page: "2" } }
+      specify { expect(entry_ids).to include walter.id, walter_jr.id }
+      specify { expect(entry_ids).to_not include grandpa.id, grandma.id, skyler.id }
+      specify { expect(json["pagination"]["total_entries"]).to eq 5 }
+      specify { expect(json["pagination"]["total_pages"]).to eq 3 }
+    end
   end
 end
 

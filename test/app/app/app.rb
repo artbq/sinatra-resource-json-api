@@ -3,6 +3,7 @@ module App
     use ConnectionPoolManagement
     register Padrino::Mailer
     register Padrino::Helpers
+    register WillPaginate::Sinatra
 
     enable :sessions
 
