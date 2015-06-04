@@ -8,7 +8,7 @@ module Sinatra
 
     class ActionNotSupported < NoMethodError; end
 
-    SUPPORTED_ACTIONS = %i(index show)
+    SUPPORTED_ACTIONS = %i(index show create)
 
     def self.registered(app)
       app.helpers Helpers
@@ -67,6 +67,22 @@ module Sinatra
 
         find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
           json record.as_json
+        end
+      end
+    end
+
+    def create(model, options)
+      post "/" do
+        content_type "application/json;charset=utf-8"
+
+        record = model.new(params[model.to_s.underscore])
+
+        if record.save
+          status 201
+          json record.as_json
+        else
+          status 422
+          json message: "#{model.to_s} not created", errors: record.errors
         end
       end
     end

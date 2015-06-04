@@ -143,5 +143,30 @@ RSpec.describe "/users" do
       end
     end
   end
+
+  describe "create" do
+
+    before(:each) do
+      post "/users", user: attributes
+    end
+
+    context "with valid data" do
+      let(:attributes) { {name: "Deirdre Skye", age: 666} }
+
+      specify { expect(last_response.status).to eq 201 }
+      specify { expect(json["name"]).to eq "Deirdre Skye" }
+      specify { expect(json["id"]).to be }
+      specify { expect(User.find_by(name: "Deirdre Skye")).to be }
+    end
+
+    context "with invalid data" do
+      let(:attributes) { {name: "Deirdre Skye"} }
+
+      specify { expect(last_response.status).to eq 422 }
+      specify { expect(User.find_by(name: "Deirdre Skye")).to_not be }
+      specify { expect(json["message"]).to eq "User not created" }
+      specify { expect(json["errors"]["age"]).to be }
+    end
+  end
 end
 
