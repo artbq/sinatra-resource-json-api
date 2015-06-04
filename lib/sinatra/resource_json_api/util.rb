@@ -25,6 +25,21 @@ module Sinatra
           object
         end
       end
+
+      def find_by(model, val, attrs)
+        record = nil
+        attrs.each do |attr|
+          if record = model.find_by(attr => val)
+            break
+          end
+        end
+        if record
+          yield(record)
+        else
+          status 404
+          json message: "#{model.to_s} not found with #{attrs.join("|")}=#{val}"
+        end
+      end
     end
   end
 

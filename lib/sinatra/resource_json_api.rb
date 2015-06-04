@@ -9,7 +9,7 @@ module Sinatra
 
     class ActionNotSupported < NoMethodError; end
 
-    SUPPORTED_ACTIONS = %i(index)
+    SUPPORTED_ACTIONS = %i(index show)
 
     def self.registered(app)
       app.helpers QueryParamsToSql
@@ -60,6 +60,16 @@ module Sinatra
 
         json entries: records.map(&:as_json),
           pagination: {total_entries: total_entries, total_pages: total_pages}
+      end
+    end
+
+    def show(model, options)
+      get "/:id" do
+        content_type "application/json;charset=utf-8"
+
+        find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
+          json record.as_json
+        end
       end
     end
   end

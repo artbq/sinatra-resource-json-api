@@ -70,5 +70,78 @@ RSpec.describe "/users" do
       specify { expect(json["pagination"]["total_pages"]).to eq 3 }
     end
   end
+
+  describe "show" do
+    let!(:kingslayer) { create(:user, name: "Jamie") }
+    let!(:imp) { create(:user, name: "Tyrion") }
+
+    before(:each) do
+      get "/users/#{id}", params
+    end
+
+    context "without find_by params" do
+      let(:params) { {} }
+
+      context "when found" do
+        let(:id) { kingslayer.id }
+
+        specify { expect(last_response.status).to eq 200 }
+        specify { expect(json["id"]).to eq kingslayer.id }
+
+        specify "attributes" do
+          expect(json["id"]).to be
+          expect(json["age"]).to be
+          expect(json["name"]).to be
+          expect(json["created_at"]).to be
+          expect(json["updated_at"]).to be
+        end
+      end
+
+      context "when not found" do
+        let(:id) { :foo }
+
+        specify { expect(last_response.status).to eq 404 }
+        specify { expect(json["message"]).to eq "User not found with id=foo" }
+      end
+    end
+
+    context "find by name" do
+      let(:params) { {find_by: ["name"]} }
+
+      context "when found" do
+        let(:id) { "Tyrion" }
+        specify { expect(json["id"]).to eq imp.id }
+      end
+
+      context "when not found" do
+        let(:id) { :foo }
+        specify { expect(last_response.status).to eq 404 }
+        specify { expect(json["message"]).to eq "User not found with name=foo" }
+      end
+    end
+
+    context "find by name or id" do
+      let(:params) { {find_by: ["id", "name"]} }
+
+      context "when found" do
+
+        context "by id" do
+          let(:id) { imp.id }
+          specify { expect(json["id"]).to eq imp.id }
+        end
+
+        context "by name" do
+          let(:id) { "Tyrion" }
+          specify { expect(json["id"]).to eq imp.id }
+        end
+      end
+
+      context "when not found" do
+        let(:id) { :foo }
+        specify { expect(last_response.status).to eq 404 }
+        specify { expect(json["message"]).to eq "User not found with id|name=foo" }
+      end
+    end
+  end
 end
 
