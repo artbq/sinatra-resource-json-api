@@ -8,7 +8,7 @@ module Sinatra
 
     class ActionNotSupported < NoMethodError; end
 
-    SUPPORTED_ACTIONS = %i(index show create update)
+    SUPPORTED_ACTIONS = %i(index show create update destroy)
 
     def self.registered(app)
       app.helpers Helpers
@@ -99,6 +99,17 @@ module Sinatra
             status 422
             json message: "#{model.to_s} not updated", errors: record.errors
           end
+        end
+      end
+    end
+
+    def destroy(model, otpions)
+      delete "/:id" do
+        content_type "application/json;charset=utf-8"
+
+        find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
+          record.destroy
+          status 204
         end
       end
     end

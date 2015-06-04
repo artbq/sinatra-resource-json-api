@@ -205,5 +205,31 @@ RSpec.describe "/users" do
       specify { expect(json["message"]).to eq "User not found with id=foo" }
     end
   end
+
+  describe "destroy" do
+    let!(:fred) { create(:user) }
+    let!(:george) { create(:user) }
+
+    before(:each) do
+      delete "/users/#{id}"
+    end
+
+    context "when found" do
+      let(:id) { fred.id }
+
+      specify { expect(last_response.status).to eq 204 }
+      specify { expect(User.find_by(id: fred.id)).to_not be }
+      specify { expect(User.find_by(id: george.id)).to be }
+    end
+
+    context "when not found" do
+      let(:id) { :foo }
+
+      specify { expect(last_response.status).to eq 404 }
+      specify { expect(json["message"]).to eq "User not found with id=foo" }
+      specify { expect(User.find_by(id: fred.id)).to be }
+      specify { expect(User.find_by(id: george.id)).to be }
+    end
+  end
 end
 
