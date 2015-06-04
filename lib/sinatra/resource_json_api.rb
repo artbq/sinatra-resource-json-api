@@ -1,8 +1,7 @@
 require "sinatra"
 require "sinatra/contrib"
 
-require "sinatra/resource_json_api/query_params_to_sql"
-require "sinatra/resource_json_api/util"
+require "sinatra/resource_json_api/helpers"
 
 module Sinatra
   module ResourceJsonApi
@@ -12,8 +11,7 @@ module Sinatra
     SUPPORTED_ACTIONS = %i(index show)
 
     def self.registered(app)
-      app.helpers QueryParamsToSql
-      app.helpers Util
+      app.helpers Helpers
     end
 
     def def_crud_actions(model, options={})
