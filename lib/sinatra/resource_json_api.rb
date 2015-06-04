@@ -41,6 +41,13 @@ module Sinatra
           model.all
         end
 
+        if fixed_params[:order]
+          order_sql = fixed_params[:order].map do |pair|
+            "#{pair.keys.first} #{pair.values.first}"
+          end.join(", ")
+          records = records.order(order_sql)
+        end
+
         json entries: records.map(&:as_json),
           pagination: {total_entries: records.count, total_pages: 1}
       end

@@ -56,6 +56,11 @@ RSpec.describe "/users" do
         specify { expect(entry_ids).to_not include grandpa.id, skyler.id }
       end
     end
+
+    context "with sorting params" do
+      let(:params) { {order: {"0" => {name: "asc"}, "1" => {age: "asc"}}} }
+      specify { expect(entry_ids).to eq [grandpa.id, grandma.id, skyler.id, walter_jr.id, walter.id] }
+    end
   end
 end
 
