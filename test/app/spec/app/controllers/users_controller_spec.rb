@@ -168,5 +168,42 @@ RSpec.describe "/users" do
       specify { expect(json["errors"]["age"]).to be }
     end
   end
+
+  describe "update" do
+    let!(:jekyll) { create(:user, name: "Mr. Jekyll") }
+
+    before(:each) do
+      put "/users/#{id}", user: attributes
+    end
+
+    context "when found" do
+      let(:id) { jekyll.id }
+
+      context "with valid data" do
+        let(:attributes) { {name: "Mr. Hyde"} }
+
+        specify { expect(last_response.status).to eq 200 }
+        specify { expect(json["name"]).to eq "Mr. Hyde" }
+        specify { expect(User.find(jekyll.id).name).to eq "Mr. Hyde" }
+      end
+
+      context "with invalid data" do
+        let(:attributes) { {name: ""} }
+
+        specify { expect(last_response.status).to eq 422 }
+        specify { expect(User.find(jekyll.id).name).to eq "Mr. Jekyll" }
+        specify { expect(json["message"]).to eq "User not updated" }
+        specify { expect(json["errors"]["name"]).to be }
+      end
+    end
+
+    context "when not found" do
+      let(:id) { :foo }
+      let(:attributes) { {name: "Mr. Hyde"} }
+
+      specify { expect(last_response.status).to eq 404 }
+      specify { expect(json["message"]).to eq "User not found with id=foo" }
+    end
+  end
 end
 

@@ -8,7 +8,7 @@ module Sinatra
 
     class ActionNotSupported < NoMethodError; end
 
-    SUPPORTED_ACTIONS = %i(index show create)
+    SUPPORTED_ACTIONS = %i(index show create update)
 
     def self.registered(app)
       app.helpers Helpers
@@ -83,6 +83,22 @@ module Sinatra
         else
           status 422
           json message: "#{model.to_s} not created", errors: record.errors
+        end
+      end
+    end
+
+    def update(model, options)
+      put "/:id" do
+        content_type "application/json;charset=utf-8"
+
+        find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
+          if record.update_attributes(params[model.to_s.underscore])
+            status 200
+            json record.as_json
+          else
+            status 422
+            json message: "#{model.to_s} not updated", errors: record.errors
+          end
         end
       end
     end
