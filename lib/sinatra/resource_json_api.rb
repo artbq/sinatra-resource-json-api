@@ -8,7 +8,7 @@ module Sinatra
 
     class ActionNotSupported < NoMethodError; end
 
-    SUPPORTED_ACTIONS = %i(index show create update destroy)
+    SUPPORTED_ACTIONS = %i(index show create update destroy destroy_all)
 
     def self.registered(app)
       app.helpers Helpers
@@ -111,6 +111,14 @@ module Sinatra
           record.destroy
           status 204
         end
+      end
+    end
+
+    def destroy_all(model, options)
+      delete "/" do
+        content_type "application/json;charset=utf-8"
+        model.destroy_all
+        status 204
       end
     end
   end
