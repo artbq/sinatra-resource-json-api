@@ -29,7 +29,7 @@ module Sinatra
 
     def index(model, options)
       get "/" do
-        content_type "application/json;charset=utf-8"
+        content_type "application/json", charset: "utf-8"
 
         fixed_params = array_hash_to_array(params)
 
@@ -56,48 +56,50 @@ module Sinatra
           total_pages = 1
         end
 
-        json entries: records.map(&:as_json),
+        {
+          entries: records,
           pagination: {total_entries: total_entries, total_pages: total_pages}
+        }.to_json
       end
     end
 
     def show(model, options)
       get "/:id" do
-        content_type "application/json;charset=utf-8"
+        content_type "application/json", charset: "utf-8"
 
         find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
-          json record.as_json
+          record.to_json
         end
       end
     end
 
     def create(model, options)
       post "/" do
-        content_type "application/json;charset=utf-8"
+        content_type "application/json", charset: "utf-8"
 
         record = model.new(params[model.to_s.underscore])
 
         if record.save
           status 201
-          json record.as_json
+          record.to_json
         else
           status 422
-          json message: "#{model.to_s} not created", errors: record.errors
+          {message: "#{model.to_s} not created", errors: record.errors}.to_json
         end
       end
     end
 
     def update(model, options)
       put "/:id" do
-        content_type "application/json;charset=utf-8"
+        content_type "application/json", charset: "utf-8"
 
         find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
           if record.update_attributes(params[model.to_s.underscore])
             status 200
-            json record.as_json
+            record.to_json
           else
             status 422
-            json message: "#{model.to_s} not updated", errors: record.errors
+            {message: "#{model.to_s} not updated", errors: record.errors}.to_json
           end
         end
       end
@@ -105,7 +107,7 @@ module Sinatra
 
     def destroy(model, otpions)
       delete "/:id" do
-        content_type "application/json;charset=utf-8"
+        content_type "application/json", charset: "utf-8"
 
         find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
           record.destroy
@@ -116,7 +118,7 @@ module Sinatra
 
     def destroy_all(model, options)
       delete "/" do
-        content_type "application/json;charset=utf-8"
+        content_type "application/json", charset: "utf-8"
         model.destroy_all
         status 204
       end
