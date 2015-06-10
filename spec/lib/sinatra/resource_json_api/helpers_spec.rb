@@ -80,6 +80,16 @@ describe Sinatra::ResourceJsonApi::Helpers do
         let(:params) { {or: [{name: "Foo"}, {is_null: "name"}] } }
         it { should eq "((name = 'Foo') OR (name IS NULL))" }
       end
+
+      context "when empty" do
+        let(:params) { {} }
+        it { should eq "" }
+      end
+
+      context "when nil" do
+        let(:params) { nil }
+        it { should eq "" }
+      end
     end
   end
 

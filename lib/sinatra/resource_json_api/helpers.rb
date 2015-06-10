@@ -6,6 +6,8 @@ module Sinatra
       extend self
 
       def query_params_to_sql(params, options={})
+        return "" if params.nil? || params.empty?
+
         if params.count > 1
           "(#{params.map { |pair| query_params_to_sql(Hash[*pair]) }.join(" AND ")})"
         else
