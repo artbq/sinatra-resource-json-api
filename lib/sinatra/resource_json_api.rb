@@ -59,7 +59,7 @@ module Sinatra
         {
           entries: records,
           pagination: {total_entries: total_entries, total_pages: total_pages}
-        }.to_json
+        }.to_json(options[:to_json] || {})
       end
     end
 
@@ -68,7 +68,7 @@ module Sinatra
         content_type "application/json", charset: "utf-8"
 
         find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
-          record.to_json
+          record.to_json(options[:to_json] || {})
         end
       end
     end
@@ -81,7 +81,7 @@ module Sinatra
 
         if record.save
           status 201
-          record.to_json
+          record.to_json(options[:to_json] || {})
         else
           status 422
           {message: "#{model.to_s} not created", errors: record.errors}.to_json
@@ -96,7 +96,7 @@ module Sinatra
         find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
           if record.update_attributes(params[model.to_s.underscore])
             status 200
-            record.to_json
+            record.to_json(options[:to_json] || {})
           else
             status 422
             {message: "#{model.to_s} not updated", errors: record.errors}.to_json
