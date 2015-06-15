@@ -33,6 +33,12 @@ module Sinatra
             "(#{val.to_s} IS NULL)"
           when "is_not_null"
             "(#{val.to_s} IS NOT NULL)"
+          when "LIKE"
+            attr, val = val.to_a.first.map(&:to_s)
+            "(#{attr} LIKE '#{val}')"
+          when "iLIKE"
+            attr, val = val.to_a.first.map(&:to_s)
+            "(LOWER(#{attr}) LIKE LOWER('#{val}'))"
           when "in"
             attr = val.to_a.first.first.to_s
             vals = val.to_a.first.last.map(&:to_s).map { |v| "'#{v}'" }.join(", ")

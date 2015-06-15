@@ -55,6 +55,13 @@ RSpec.describe "/users" do
         specify { expect(entry_ids).to include walter.id, walter_jr.id, grandma.id }
         specify { expect(entry_ids).to_not include grandpa.id, skyler.id }
       end
+
+      context "iLIKE" do
+        let(:params) { {query: {LIKE: {name: "%wal%"}}} }
+
+        specify { expect(entry_ids).to include walter.id, walter_jr.id }
+        specify { expect(entry_ids).to_not include grandpa.id, skyler.id, grandma.id }
+      end
     end
 
     context "with sorting params" do

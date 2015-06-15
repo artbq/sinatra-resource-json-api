@@ -81,6 +81,16 @@ describe Sinatra::ResourceJsonApi::Helpers do
         it { should eq "((name = 'Foo') OR (name IS NULL))" }
       end
 
+      describe "LIKE" do
+        let(:params) { {LIKE: {name: "%Foo%"}} }
+        it { should eq "(name LIKE '%Foo%')" }
+      end
+
+      describe "iLIKE" do
+        let(:params) { {iLIKE: {name: "%foo%"}} }
+        it { should eq "(LOWER(name) LIKE LOWER('%foo%'))" }
+      end
+
       context "when empty" do
         let(:params) { {} }
         it { should eq "" }
