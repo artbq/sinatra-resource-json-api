@@ -90,16 +90,32 @@ module Sinatra
     end
 
     def update(model, options)
-      put "/:id" do
-        content_type "application/json", charset: "utf-8"
+      if options[:update_with_post]
+        post "/:id" do
+          content_type "application/json", charset: "utf-8"
 
-        find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
-          if record.update_attributes(params[model.to_s.underscore])
-            status 200
-            record.to_json(options[:to_json] || {})
-          else
-            status 422
-            {message: "#{model.to_s} not updated", errors: record.errors}.to_json
+          find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
+            if record.update_attributes(params[model.to_s.underscore])
+              status 200
+              record.to_json(options[:to_json] || {})
+            else
+              status 422
+              {message: "#{model.to_s} not updated", errors: record.errors}.to_json
+            end
+          end
+        end
+      else
+        put "/:id" do
+          content_type "application/json", charset: "utf-8"
+
+          find_by(model, params[:id], params[:find_by] || ["id"]) do |record|
+            if record.update_attributes(params[model.to_s.underscore])
+              status 200
+              record.to_json(options[:to_json] || {})
+            else
+              status 422
+              {message: "#{model.to_s} not updated", errors: record.errors}.to_json
+            end
           end
         end
       end
