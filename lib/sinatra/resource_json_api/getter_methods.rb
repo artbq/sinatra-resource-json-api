@@ -10,8 +10,8 @@ module Sinatra
         query, order, page, per_page = params.values_at(:query, :order, :page, :per_page)
 
         result = query ? relation.where(where_sql(query)) : relation.all
-        result = relation.order(order_sql(order)) if order
-        result = relation.paginate(page: page || 1, per_page: per_page || 10) if page || per_page
+        result = result.order(order_sql(order)) if order
+        result = result.paginate(page: page || 1, per_page: per_page || 10) if page || per_page
 
         yield result
       end
