@@ -69,7 +69,15 @@ module Sinatra
             end
           else
             status 422
-            {message: "#{resource.to_s} not created", errors: record.errors}.to_json
+            if opts[:full_error_messages]
+              {
+                message: "#{resource.to_s} not created",
+                errors: record.errors,
+                full_error_messages: record.errors.full_messages
+              }.to_json
+            else
+              {message: "#{resource.to_s} not created", errors: record.errors}.to_json
+            end
           end
         end
       end
@@ -92,7 +100,15 @@ module Sinatra
               end
             else
               status 422
-              {message: "#{resource.to_s} not updated", errors: record.errors}.to_json
+              if opts[:full_error_messages]
+                {
+                  message: "#{resource.to_s} not created",
+                  errors: record.errors,
+                  full_error_messages: record.errors.full_messages
+                }.to_json
+              else
+                {message: "#{resource.to_s} not created", errors: record.errors}.to_json
+              end
             end
           end
         end
